@@ -13,7 +13,7 @@ const getVersion = require('./getVersion');
 const fileName = basename(url);
 const filePath = resolve(downloadsDir, fileName);
 
-module.exports = function* download({ fetch, }) {
+module.exports = function* download({ fetch }) {
 
   fetch = fetch || nodeFetch;
 

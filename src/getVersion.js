@@ -2,7 +2,7 @@
 
 const exec = require('child_process');
 
-module.exports = function* getInstalledVersion(bitcoindPath) {
+module.exports = function* getVersion(bitcoindPath) {
 
   const stderr = yield new Promise((resolve, reject) => {
     exec(bitcoindPath + ' --version', (error, stderr) => {
