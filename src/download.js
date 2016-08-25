@@ -1,57 +1,71 @@
 'use strict';
 
-const { basename, resolve } = require('path');
-const { createWriteStream } = require('fs');
+const {createWriteStream} = require('fs');
+const {platform, arch} = require('os');
+const {basename, resolve} = require('path');
 
 const decompress = require('decompress');
 const nodeFetch = require('node-fetch');
+const tmp = require('tmp');
+const {ensureDir, rename} = require('@carnesen/fs');
 
-const { ensureDir, rename } = require('../../util');
-const { downloadsDir, executableName, url, version, executablePath } = require('./constants');
-const getVersion = require('./getVersion');
+const {executableName} = require('./constants');
+const debug = require('./debug');
 
-const fileName = basename(url);
-const filePath = resolve(downloadsDir, fileName);
+// example URLs
+// https://bitcoin.org/bin/bitcoin-core-0.12.1/bitcoin-0.12.1-win64.zip
+// https://bitcoin.org/bin/bitcoin-core-0.12.1/bitcoin-0.12.1-osx64.tar.gz
+// https://bitcoin.org/bin/bitcoin-core-0.12.1/bitcoin-0.12.1-win32.zip
+// https://bitcoin.org/bin/bitcoin-core-0.12.1/bitcoin-0.12.1-linux64.tar.gz
 
-module.exports = function* download({ fetch }) {
+let urlEnding;
 
-  fetch = fetch || nodeFetch;
+switch (platform()) {
 
-  let installedVersion = yield getVersion();
+  case 'darwin':
+    urlEnding = 'osx64.tar.gz';
+    break;
 
-  if (version !== installedVersion) {
+  case 'win32':
+    urlEnding = arch() === 'x64' ? 'win64.zip' : 'win32.zip';
+    break;
 
-    log.info('Downloading Bitcoin Core version', version);
+  case 'linux':
+    urlEnding = arch() === 'x64' ? 'linux64.tar.gz' : 'linux32.tar.gz';
+    break;
 
-    const res = yield fetch(url, { method: 'get' });
+  default:
+    throw new Error('Unsupported platform ' + platform());
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch from ' + url);
-    }
+}
 
-    yield ensureDir(downloadsDir);
 
-    const writeStream = createWriteStream(filePath);
+module.exports = function* download({version, binDir, fetch = nodeFetch}) {
 
-    yield new Promise((resolve, reject) => {
-      res.body.pipe(writeStream)
-        .on('error', reject)
-        .on('close', resolve);
-    });
+  const url =
+    `https://bitcoin.org/bin/bitcoin-core-${ version }/bitcoin-${ version }-${ urlEnding }`;
 
-    yield decompress(filePath, downloadsDir, {
-      filter: file => file.path.match('bin/' + executableName),
-      map: file => Object.assign(file, { path: executableName })
-    });
+  debug(`GET ${ url }`);
 
-    yield rename(resolve(downloadsDir, executableName), executablePath);
+  const res = yield fetch(url, {method: 'get'});
 
-    installedVersion = yield getVersion();
-
-    if (version !== installedVersion) {
-      throw new Error('Expected installed version to be ' + version + '. Found ' + installedVersion);
-    }
-
+  if (!res.ok) {
+    throw new Error('Failed to fetch from ' + url);
   }
+
+  const writeStream = createWriteStream(filePath);
+
+  yield new Promise((resolve, reject) => {
+    res.body.pipe(writeStream)
+      .on('error', reject)
+      .on('close', resolve);
+  });
+
+  yield decompress(filePath, downloadsDir, {
+    filter: file => file.path.match('bin/' + executableName),
+    map: file => Object.assign(file, {path: executableName})
+  });
+
+  yield rename(resolve(downloadsDir, executableName), executablePath);
 
 };

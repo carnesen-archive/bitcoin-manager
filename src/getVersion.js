@@ -1,11 +1,18 @@
 'use strict';
 
-const exec = require('child_process');
+const { resolve } = require('path');
+const { exec } = require('child_process');
 
-module.exports = function* getVersion(bitcoindPath) {
+const { throwIfNotString } = require('@carnesen/util');
+
+const { executableName } = require('./constants');
+
+module.exports = function* getVersion(binDir) {
+
+  throwIfNotString(binDir, 'binDir');
 
   const stderr = yield new Promise((resolve, reject) => {
-    exec(bitcoindPath + ' --version', (error, stderr) => {
+    exec(`"${ resolve(binDir, executableName) }" --version`, (error, stderr) => {
       if (error) {
         reject(error);
       } else {
