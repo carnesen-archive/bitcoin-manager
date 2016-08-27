@@ -1,5 +1,5 @@
 {
-  "name": "@carnesen/bitcoind-util",
+  "name": "@carnesen/bitcoin-spawn",
   "description": "For spawning the Bitcoin Core daemon",
   "version": "0.0.1",
   "main": "src/index.js",
