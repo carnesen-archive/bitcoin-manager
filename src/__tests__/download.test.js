@@ -1,57 +1,92 @@
-// const { resolve } = require('path');
-// const { statSync, createReadStream } = require('fs');
-// const { wrap } = require('co');
-//
-// const { remove } = require('../../../util');
-// const { downloadsDir, executableName, executablePath, version } = require('../../constants');
-// const download = require('../download');
-//
-// const res = {
-//   ok: true,
-//   body: createReadStream(resolve(__dirname, 'bitcoin.zip'))
-// };
-//
-// describe('download', function () {
-//
-//   it('does the right thing', wrap(function*() {
-//
-//     const gen = download((...args) => [...args]);
-//
-//     let v;
-//
-//     yield [remove(downloadsDir), remove(executablePath)];
-//
-//     // getVersion
-//     gen.next();
-//
-//     // fetch
-//     v = gen.next().value;
-//     v[0].should.match(/^http/);
-//     v[1].method.should.equal('get');
-//
-//     // ensureDir
-//     yield gen.next(res).value;
-//     statSync(downloadsDir).isDirectory().should.equal(true);
-//
-//     // readStream promise
-//     yield gen.next(res).value;
-//
-//     // decompress
-//     yield gen.next().value;
-//     statSync(resolve(downloadsDir, executableName)).isFile().should.equal(true);
-//
-//     // rename
-//     yield gen.next().value;
-//     statSync(executablePath).isFile().should.equal(true);
-//
-//     // recheck installed version
-//     gen.next();
-//
-//     // end of generator
-//     gen.next(version).should.deep.equal({ value: undefined, done: true });
-//
-//     yield [remove(downloadsDir), remove(executablePath)];
-//
-//   }));
-//
-// });
+const { resolve } = require('path');
+const { createReadStream } = require('fs');
+
+const { wrap } = require('co');
+
+const { createTmpDir, stat } = require('@carnesen/fs');
+const { getExecutablePath, getUrl } = require('../constants');
+const download = require('../download');
+
+const fetch = (...args) => [...args];
+
+const res = {
+  ok: true,
+  body: createReadStream(resolve(__dirname, 'bitcoin.zip'))
+};
+
+const version = '1.2.3';
+
+describe('download', function () {
+
+  it('throws if no argument is provided', function () {
+    (() => download()).should.throw('Cannot match');
+  });
+
+  it('throws if binDir is not provided', function () {
+    (() => download({ version }).next()).should.throw('Expected');
+  });
+
+  it('throws if version is not provided', function () {
+    (() => download({ binDir: 'asdf' }).next()).should.throw('Expected');
+  });
+
+  it('exits early if existing version is equal to passed version', function () {
+    const gen = download({ version, binDir: 'asdf', fetch });
+    // getVersion
+    gen.next();
+    gen.next(version).should.deep.equal({ done: true, value: undefined });
+  });
+
+  it('downloads the software if it does not already exist', wrap(function*() {
+
+    const binDir = yield createTmpDir({ unsafeCleanup: true });
+
+    const gen = download( { version, binDir, fetch });
+
+    let stats, v;
+
+    // getVersion
+    try {
+      yield gen.next().value;
+    } catch (ex) {
+      ex.code.should.equal(127); // executable not found
+    }
+
+    // createTmpFile (throw getVersion)
+    v = gen.throw().value;
+    const [ tmpFilePath, tmpFileDescriptor] = yield v;
+
+    // fetch (inject tmpFile)
+    v = gen.next([ tmpFilePath, tmpFileDescriptor ]).value;
+    v[0].should.equal(getUrl(version));
+    v[1].method.should.equal('GET');
+
+    // writeStream promise
+    yield gen.next(res).value;
+
+    const tmpDir = yield gen.next().value;
+
+    // decompress (inject tmpDir)
+    yield gen.next(tmpDir).value;
+    stats = yield stat(getExecutablePath(tmpDir));
+    stats.isFile().should.equal(true);
+
+    // ensureDir
+    yield gen.next().value;
+    stats = yield stat(binDir);
+    stats.isDirectory().should.equal(true);
+
+    // rename
+    yield gen.next().value;
+    stats = yield stat(getExecutablePath(binDir));
+    stats.isFile().should.equal(true);
+
+    // recheck installed version
+    gen.next();
+
+    // end of generator
+    gen.next(version).should.deep.equal({ value: undefined, done: true });
+
+  }));
+
+});

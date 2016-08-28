@@ -1,9 +1,9 @@
 
 const getVersion = require('../getVersion');
 
-describe('getVersion generator function', function () {
+describe('getVersion', function () {
 
-  it('throws if no argument is provided', function() {
+  it('throws if no argument is provided', function () {
     (() => getVersion().next()).should.throw('string');
   });
 

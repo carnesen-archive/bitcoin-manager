@@ -4,4 +4,4 @@ const debug = require('debug');
 
 const { name } = require('../package.json');
 
-module.exports = debug(`carnesen:${ name }`);
+module.exports = debug(name);
