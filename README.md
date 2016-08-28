@@ -1,2 +1,2 @@
-bitcoin-spawn
-=============
+@carnesen/bitcoin-launch
+========================
