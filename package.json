@@ -1,6 +1,6 @@
 {
   "name": "@carnesen/bitcoin-launch",
-  "description": "For spawning the Bitcoin Core daemon",
+  "description": "For launching the Bitcoin Core daemon, bitcoind",
   "version": "0.0.1",
   "main": "src/index.js",
   "author": {
@@ -23,6 +23,7 @@
     "test:unit": "cross-env NODE_ENV=test mocha src/**/__tests__/**/*.test.js"
   },
   "dependencies": {
+    "@carnesen/bitcoin-conf": "0.0.1",
     "@carnesen/fs": "0.0.1",
     "@carnesen/util": "0.0.1",
     "debug": "2.2.0",
