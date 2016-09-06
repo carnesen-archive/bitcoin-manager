@@ -22,14 +22,6 @@ describe('download', function () {
     (() => download()).should.throw('Cannot match');
   });
 
-  it('throws if binDir is not provided', function () {
-    (() => download({ version }).next()).should.throw('Expected');
-  });
-
-  it('throws if version is not provided', function () {
-    (() => download({ binDir: 'asdf' }).next()).should.throw('Expected');
-  });
-
   it('exits early if existing version is equal to passed version', function () {
     const gen = download({ version, binDir: 'asdf', fetch });
     // getVersion

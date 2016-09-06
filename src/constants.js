@@ -33,6 +33,7 @@ switch (platform()) {
 const executableName = platform() === 'win32' ? 'bitcoind.exe' : 'bitcoind';
 
 module.exports = {
+  defaultVersion: '0.13.0',
   executableName,
   getExecutablePath: binDir => resolve(binDir, executableName),
   getUrl: version =>

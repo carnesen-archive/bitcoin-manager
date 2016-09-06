@@ -5,16 +5,12 @@ const { createWriteStream } = require('fs');
 const decompress = require('decompress');
 const nodeFetch = require('node-fetch');
 const { createTmpDir, createTmpFile, ensureDir, rename } = require('@carnesen/fs');
-const { throwIfNotPositiveLengthString } = require('@carnesen/util');
 
 const getVersion = require('./getVersion');
 const { executableName, getExecutablePath, getUrl } = require('./constants');
-const debug = require('./debug');
+const log = require('./log');
 
 module.exports = function* download({ version, binDir, fetch = nodeFetch }) {
-
-  throwIfNotPositiveLengthString(version, 'version');
-  throwIfNotPositiveLengthString(binDir, 'binDir');
 
   let versionFound;
   try {
@@ -23,15 +19,17 @@ module.exports = function* download({ version, binDir, fetch = nodeFetch }) {
       return;
     }
   } catch (ex) {
-    // probably means the file doesn't exist
-    debug(ex);
+    // probably means the file doesn't exist, which is fine
+    log.debug(ex);
   }
 
   const url = getUrl(version);
 
-  debug(`GET ${ url }`);
+  log.debug(`GET ${ url }`);
 
   const [ tmpFilePath, tmpFileDescriptor ] = yield createTmpFile();
+
+  log.info(`Downloading from ${ url } to a temp file`);
 
   const res = yield fetch(url, { method: 'GET' });
 
@@ -49,11 +47,11 @@ module.exports = function* download({ version, binDir, fetch = nodeFetch }) {
       .on('close', resolve);
   });
 
-  debug(`GOT ${ url }`);
+  log.debug(`GOT ${ url }`);
 
   const tmpDir = yield createTmpDir({ unsafeCleanup: true });
 
-  debug(`Extracting ${ executableName }`);
+  log.info(`Extracting ${ executableName }`);
 
   yield decompress(tmpFilePath, tmpDir, {
     filter: file => file.path.match('bin/' + executableName),

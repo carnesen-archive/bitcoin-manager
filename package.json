@@ -26,9 +26,9 @@
     "@carnesen/bitcoin-conf": "0.0.1",
     "@carnesen/fs": "0.0.1",
     "@carnesen/util": "0.0.1",
-    "debug": "2.2.0",
     "decompress": "4.0.0",
-    "node-fetch": "1.6.0"
+    "node-fetch": "1.6.0",
+    "split": "1.0.0"
   },
   "devDependencies": {
     "chai": "3.5.0",

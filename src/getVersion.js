@@ -5,19 +5,24 @@ const { exec } = require('child_process');
 const { throwIfNotString } = require('@carnesen/util');
 
 const { getExecutablePath } = require('./constants');
+const log = require('./log');
 
 module.exports = function* getVersion(binDir) {
 
   throwIfNotString(binDir, 'binDir');
 
-  const command = `"${ getExecutablePath(binDir) }" --version` ;
+  const executablePath = getExecutablePath(binDir);
+
+  log.info(`Checking existing version of ${ executablePath }`);
+
+  const command = `"${ executablePath }" --version`;
 
   const stderr = yield new Promise((resolve, reject) => {
     exec(command, (error, stderr) => {
-      if (error) {
-        reject(error);
-      } else {
+      if (error && error.code === 1) {
         resolve(stderr);
+      } else {
+        reject(new Error(`Expected ${ command } to exit with status code 1`));
       }
     });
   });
