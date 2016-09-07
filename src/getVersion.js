@@ -19,8 +19,12 @@ module.exports = function* getVersion(binDir) {
 
   const stderr = yield new Promise((resolve, reject) => {
     exec(command, (error, stderr) => {
-      if (error && error.code === 1) {
-        resolve(stderr);
+      if (error) {
+        if (error.code === 1) {
+          resolve(stderr);
+        } else {
+          reject(error);
+        }
       } else {
         reject(new Error(`Expected ${ command } to exit with status code 1`));
       }
