@@ -6,8 +6,3 @@ node_modules/
 
 # IntelliJ project files
 .idea/
-
-# Created by tests
-downloads/
-bitcoind
-bitcoind.exe
