@@ -26,7 +26,7 @@ switch (platform()) {
     break;
 
   default:
-    throw new Error('Unsupported platform ' + platform());
+    throw new Error(`Unsupported platform ${ platform() }`);
 
 }
 

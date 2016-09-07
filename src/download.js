@@ -34,7 +34,7 @@ module.exports = function* download({ version, binDir, fetch = nodeFetch }) {
   const res = yield fetch(url, { method: 'GET' });
 
   if (!res.ok) {
-    throw new Error('Failed to fetch from ' + url);
+    throw new Error(`Failed to fetch from ${ url }`);
   }
 
   const writeStream = createWriteStream(undefined, {
@@ -54,7 +54,7 @@ module.exports = function* download({ version, binDir, fetch = nodeFetch }) {
   log.info(`Extracting ${ executableName }`);
 
   yield decompress(tmpFilePath, tmpDir, {
-    filter: file => file.path.match('bin/' + executableName),
+    filter: file => file.path.match(`bin/${ executableName }`),
     map: file => Object.assign(file, { path: executableName })
   });
 
@@ -65,7 +65,7 @@ module.exports = function* download({ version, binDir, fetch = nodeFetch }) {
   versionFound = yield getVersion(binDir);
 
   if (versionFound !== version) {
-    throw new Error(`Expected downloaded version to be "${ version}", found "${ versionFound }"`);
+    throw new Error(`Expected downloaded version to be "${ version }", found "${ versionFound }"`);
   }
 
 };
