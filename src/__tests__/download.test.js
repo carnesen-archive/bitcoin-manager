@@ -16,7 +16,7 @@ const res = {
 
 const version = '1.2.3';
 
-describe('download', function () {
+describe.only('download', function () {
 
   it('throws if no argument is provided', function () {
     (() => download()).should.throw('Cannot match');

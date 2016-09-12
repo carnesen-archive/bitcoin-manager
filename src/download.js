@@ -6,7 +6,7 @@ const decompress = require('decompress');
 const nodeFetch = require('node-fetch');
 const { createTmpDir, createTmpFile, ensureDir, rename } = require('@carnesen/fs');
 
-const getVersion = require('./getVersion');
+const getVersionOfBinDir = require('./getVersionOfBinDir');
 const { executableName, getExecutablePath, getUrl } = require('./constants');
 const log = require('./log');
 
@@ -14,7 +14,7 @@ module.exports = function* download({ version, binDir, fetch = nodeFetch }) {
 
   let versionFound;
   try {
-    versionFound = yield getVersion(binDir);
+    versionFound = yield getVersionOfBinDir(binDir);
     if (versionFound === version) {
       return;
     }
@@ -62,7 +62,7 @@ module.exports = function* download({ version, binDir, fetch = nodeFetch }) {
 
   yield rename(getExecutablePath(tmpDir), getExecutablePath(binDir));
 
-  versionFound = yield getVersion(binDir);
+  versionFound = yield getVersionOfBinDir(binDir);
 
   if (versionFound !== version) {
     throw new Error(`Expected downloaded version to be "${ version }", found "${ versionFound }"`);

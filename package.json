@@ -1,5 +1,5 @@
 {
-  "name": "@carnesen/bitcoin-launch",
+  "name": "@carnesen/bitcoin-manager",
   "description": "For launching the Bitcoin Core daemon, bitcoind",
   "version": "0.0.1",
   "main": "src/index.js",
@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/carnesen/bitcoin-launch.git"
+    "url": "https://github.com/carnesen/bitcoin-manager.git"
   },
   "bugs": {
-    "url": "https://github.com/carnesen/bitcoin-launch/issues"
+    "url": "https://github.com/carnesen/bitcoin-manager/issues"
   },
-  "homepage": "https://github.com/carnesen/bitcoin-launch",
+  "homepage": "https://github.com/carnesen/bitcoin-manager",
   "license": "MIT",
   "scripts": {
     "lint": "eslint src --config carnesen",
@@ -25,16 +25,17 @@
   "dependencies": {
     "@carnesen/bitcoin-conf": "0.0.1",
     "@carnesen/fs": "0.0.1",
-    "@carnesen/util": "0.0.1",
+    "@carnesen/pm2-as-promised": "0.0.1",
+    "@carnesen/util": "0.0.2",
     "decompress": "4.0.0",
-    "node-fetch": "1.6.0",
+    "node-fetch": "1.6.1",
     "split": "1.0.0"
   },
   "devDependencies": {
     "chai": "3.5.0",
     "co": "4.6.0",
     "cross-env": "2.0.1",
-    "eslint": "3.4.0",
+    "eslint": "3.5.0",
     "eslint-config-carnesen": "1.0.3",
     "mocha": "3.0.2"
   }
