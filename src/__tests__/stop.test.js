@@ -7,7 +7,7 @@ const pm2p = require('@carnesen/pm2-as-promised');
 const { bitcoind } = require('../constants');
 const stop = require('../stop');
 
-describe.only('stop', function () {
+describe('stop', function () {
 
   it('catches "not found"', wrap(function* () {
     yield pm2p.killDaemon();
