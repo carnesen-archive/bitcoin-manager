@@ -25,8 +25,8 @@
   "dependencies": {
     "@carnesen/bitcoin-conf": "0.0.1",
     "@carnesen/fs": "0.0.1",
-    "@carnesen/pm2-as-promised": "0.0.1",
-    "@carnesen/util": "0.0.2",
+    "@carnesen/pm2-as-promised": "0.0.2",
+    "@carnesen/util": "0.0.3",
     "decompress": "4.0.0",
     "node-fetch": "1.6.1",
     "split": "1.0.0"
@@ -37,6 +37,7 @@
     "cross-env": "2.0.1",
     "eslint": "3.5.0",
     "eslint-config-carnesen": "1.0.3",
-    "mocha": "3.0.2"
+    "mocha": "3.0.2",
+    "sinon": "1.17.6"
   }
 }

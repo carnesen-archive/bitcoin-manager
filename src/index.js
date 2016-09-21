@@ -3,5 +3,7 @@
 module.exports = {
   constants: require('./constants'),
   log: require('./log'),
-  start: require('./start')
+  getRunningVersion: require('./getRunningVersion'),
+  start: require('./start'),
+  stop: require('./stop')
 };

@@ -4,16 +4,13 @@ const childProcess = require('child_process');
 
 const { throwIfNotString } = require('@carnesen/util');
 
-const { getExecutablePath } = require('./constants');
 const log = require('./log');
 
-module.exports = function getVersionOfBinDir(binDir, exec = childProcess.exec) {
+module.exports = function getBitcoindVersion(executablePath, exec = childProcess.exec) {
 
-  throwIfNotString(binDir, 'binDir');
+  throwIfNotString(executablePath, 'executablePath');
 
-  const executablePath = getExecutablePath(binDir);
-
-  log.debug(`Checking version of bin directory ${ binDir }`);
+  log.debug(`getBitcoindVersion: executablePath = ${ executablePath }`);
 
   const command = `"${ executablePath }" --version`;
 
@@ -26,9 +23,12 @@ module.exports = function getVersionOfBinDir(binDir, exec = childProcess.exec) {
           if (!matches) {
             reject(new Error(`Expected to find version string in output of ${ command }`));
           } else {
-            resolve(matches[0]);
+            const version = matches[0];
+            log.debug(`getBitcoindVersion: found ${ version }`);
+            resolve(version);
           }
         } else {
+          log.debug('getBitcoindVersion: resolving "undefined"');
           resolve();
         }
       } else {
