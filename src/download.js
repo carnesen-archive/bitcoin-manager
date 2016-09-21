@@ -6,15 +6,17 @@ const decompress = require('decompress');
 const nodeFetch = require('node-fetch');
 const { createTmpDir, createTmpFile, ensureDir, rename } = require('@carnesen/fs');
 
-const getVersion = require('./getVersion');
+const getBitcoindVersion = require('./getBitcoindVersion');
 const { executableName, getExecutablePath, getUrl } = require('./constants');
 const log = require('./log');
 
 module.exports = function* download({ version, binDir, fetch = nodeFetch }) {
 
+  const executablePath = getExecutablePath(binDir);
+
   let versionFound;
   try {
-    versionFound = yield getVersion(binDir);
+    versionFound = yield getBitcoindVersion(executablePath);
     if (versionFound === version) {
       return;
     }
@@ -60,9 +62,9 @@ module.exports = function* download({ version, binDir, fetch = nodeFetch }) {
 
   yield ensureDir(binDir);
 
-  yield rename(getExecutablePath(tmpDir), getExecutablePath(binDir));
+  yield rename(getExecutablePath(tmpDir), executablePath);
 
-  versionFound = yield getVersion(binDir);
+  versionFound = yield getBitcoindVersion(executablePath);
 
   if (versionFound !== version) {
     throw new Error(`Expected downloaded version to be "${ version }", found "${ versionFound }"`);

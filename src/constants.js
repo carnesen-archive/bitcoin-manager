@@ -35,6 +35,7 @@ const executableName = platform() === 'win32' ? 'bitcoind.exe' : 'bitcoind';
 module.exports = {
   defaultVersion: '0.13.0',
   executableName,
+  bitcoind: 'bitcoind',
   getExecutablePath: binDir => resolve(binDir, executableName),
   getUrl: version =>
     `https://bitcoin.org/bin/bitcoin-core-${ version }/bitcoin-${ version }-${ urlEnding }`
